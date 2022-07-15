@@ -1,7 +1,7 @@
 {
   "name": "rn-paper-select",
   "version": "0.2.0",
-  "description": "Material Design Dropdown Component using React Native Paper, now also with multiselect",
+  "description": "Material Design Select Component using React Native Paper, now also with multiSelect support.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -108,7 +108,7 @@
   },
   "eslintConfig": {
     "root": true,
-    "parser": "@babel/eslint-parser",
+    "parser": "@typescript-eslint/parser",
     "extends": [
       "@react-native-community",
       "prettier"

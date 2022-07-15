@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  LayoutChangeEvent,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { LayoutChangeEvent, View, ViewStyle } from 'react-native';
 import { TextInput, TouchableRipple } from 'react-native-paper';
 import type { TextInputPropsWithoutTheme } from '../Select';
 import { useDynamicStyles } from '../Select/hooks/useDynamicStyles';
@@ -47,7 +43,6 @@ export const Input = ({
       outlineColor,
       error,
     });
-    console.log(textColor)
   return (
     <TouchableRipple
       onPress={disabled ? undefined : showItems}
@@ -72,7 +67,11 @@ export const Input = ({
           }
           {...inputProps}
           outlineColor="transparent"
-          style={[{ color: textColor }, inputProps?.style, visible ? activeStyle : normalStyle]}
+          style={[
+            { color: textColor },
+            inputProps?.style,
+            visible ? activeStyle : normalStyle,
+          ]}
         />
       </View>
     </TouchableRipple>
