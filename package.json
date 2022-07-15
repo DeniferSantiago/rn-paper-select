@@ -1,6 +1,6 @@
 {
   "name": "rn-paper-select",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Material Design Dropdown Component using React Native Paper, now also with multiselect",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
