@@ -33,21 +33,28 @@ export const Input = ({
   ...touchableProps
 }: InputParams) => {
   const { activeOutlineColor, activeUnderlineColor, outlineColor } =
-    inputProps as TextInputPropsWithoutTheme;
-  const { rippleColor, activeStyle, normalStyle, disabledColor, textColor } =
-    useDynamicStyles({
-      theme,
-      mode,
-      activeOutlineColor,
-      activeUnderlineColor,
-      outlineColor,
-      error,
-    });
+    inputProps ?? {};
+  const {
+    rippleColor,
+    activeStyle,
+    normalStyle,
+    disabledColor,
+    textColor,
+    defaultBackgroundColor,
+  } = useDynamicStyles({
+    theme,
+    mode,
+    activeOutlineColor,
+    activeUnderlineColor,
+    outlineColor,
+    error,
+  });
   return (
     <TouchableRipple
       onPress={disabled ? undefined : showItems}
       rippleColor={rippleColor}
-      style={containerInputStyle}
+      disabled={disabled}
+      style={[{ backgroundColor: defaultBackgroundColor }, containerInputStyle]}
       {...touchableProps}
     >
       <View pointerEvents="none">
@@ -67,8 +74,9 @@ export const Input = ({
           }
           {...inputProps}
           outlineColor="transparent"
+          underlineColor="transparent"
           style={[
-            { color: textColor },
+            { color: textColor, backgroundColor: 'transparent' },
             inputProps?.style,
             visible ? activeStyle : normalStyle,
           ]}

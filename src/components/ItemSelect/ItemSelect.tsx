@@ -40,27 +40,17 @@ export const ItemSelect = ({
   const activeTheme = useTheme();
   const primaryColor = theme?.colors.primary ?? activeTheme.colors.primary;
   const textColor = theme?.colors.text ?? activeTheme.colors.text;
-  const color = activeColor ?? primaryColor
+  const color = activeColor ?? primaryColor;
   return (
     <>
-      <TouchableRipple style={staticStyles.container} onPress={() => setActive(item.value)}>
+      <TouchableRipple
+        style={[
+          staticStyles.container,
+          isActive ? styles.itemSelectedStyle : styles.itemStyle,
+        ]}
+        onPress={() => setActive(item.value)}
+      >
         <>
-          <Menu.Item
-            titleStyle={[
-              {
-                color: isActive ?  color : textColor,
-              },
-              isActive ? styles.itemSelectedTextStyle : styles.itemTextStyle,
-            ]}
-            title={item.custom || item.label}
-            style={[
-              {
-                flex: 1,
-                maxWidth: width,
-              },
-              isActive ? styles.itemSelectedStyle : styles.itemStyle,
-            ]}
-          />
           {multiSelect && (
             <Checkbox.Android
               theme={{
@@ -70,6 +60,21 @@ export const ItemSelect = ({
               onPress={() => setActive(item.value)}
             />
           )}
+          <Menu.Item
+            titleStyle={[
+              {
+                color: isActive ? color : textColor,
+              },
+              isActive ? styles.itemSelectedTextStyle : styles.itemTextStyle,
+            ]}
+            title={item.custom || item.label}
+            style={[
+              {
+                flex: 1,
+                maxWidth: width,
+              }
+            ]}
+          />
         </>
       </TouchableRipple>
       <Divider />

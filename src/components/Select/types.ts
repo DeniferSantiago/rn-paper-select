@@ -1,15 +1,17 @@
-import type { ReactNode, SetStateAction, Dispatch } from "react";
-import type { TextStyle, ViewStyle } from "react-native";
-import type { TextInputProps } from "react-native-paper/lib/typescript/components/TextInput/TextInput";
+import type { ReactNode, SetStateAction, Dispatch } from 'react';
+import type { TextStyle, ViewStyle } from 'react-native';
+import type { TextInputProps } from 'react-native-paper/lib/typescript/components/TextInput/TextInput';
 
 type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
-export type TextInputPropsWithoutTheme = Without<TextInputProps, "theme">;
-export type Value = string | number | null
+export type TextInputPropsWithoutTheme =
+  | Without<TextInputProps, 'theme'>
+  | undefined;
+export type Value = string | number | null;
 export type Item = {
-  value: Value
-  label: string
-  custom?: ReactNode
-}
+  value: Value;
+  label: string;
+  custom?: ReactNode;
+};
 export interface ISelect<T> {
   visible: boolean;
   multiSelect?: boolean;
@@ -21,7 +23,7 @@ export interface ISelect<T> {
   setValue: Dispatch<SetStateAction<T>>;
   label?: string;
   placeholder?: string;
-  mode?: "outlined" | "flat";
+  mode?: 'outlined' | 'flat';
   inputProps?: TextInputPropsWithoutTheme;
   list: Array<Item>;
   itemsContainerMaxHeight?: number;

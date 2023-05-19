@@ -1,14 +1,24 @@
-import { useTheme } from 'react-native-paper'
+import { useTheme } from 'react-native-paper';
 type HookParams = {
   theme?: ReactNativePaper.Theme;
-  mode?: "outlined" | "flat";
+  mode?: 'outlined' | 'flat';
   activeUnderlineColor?: string;
   activeOutlineColor?: string;
   outlineColor?: string;
-  error?: boolean
-}
-export const useDynamicStyles = ({ theme, mode, activeUnderlineColor, activeOutlineColor, outlineColor, error }: HookParams) => {
+  error?: boolean;
+};
+export const useDynamicStyles = ({
+  theme,
+  mode,
+  error,
+  ...colors
+}: HookParams) => {
   const activeTheme = useTheme();
+  const {
+    activeUnderlineColor = activeTheme.colors.placeholder,
+    activeOutlineColor = activeTheme.colors.placeholder,
+    outlineColor = activeTheme.colors.placeholder,
+  } = colors;
   const errorColor = theme?.colors.error ?? activeTheme.colors.error;
   const disabledColor = theme?.colors.disabled ?? activeTheme.colors.disabled;
   const textColor = theme?.colors.text ?? activeTheme.colors.text;
@@ -31,5 +41,13 @@ export const useDynamicStyles = ({ theme, mode, activeUnderlineColor, activeOutl
           borderWidth: 1,
         }
       : undefined;
-  return { activeStyle, normalStyle, rippleColor, disabledColor, textColor };
+  const defaultBackgroundColor = activeTheme.colors.background;
+  return {
+    activeStyle,
+    normalStyle,
+    rippleColor,
+    disabledColor,
+    textColor,
+    defaultBackgroundColor,
+  };
 };

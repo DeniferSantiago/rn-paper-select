@@ -10,7 +10,8 @@ const defaultLayout = {
   x: 0,
   y: 0,
 };
-export const Select = <T extends Value | Array<Value>>(props: ISelect<T>) => {
+type ListValue = Array<Value> | undefined | null;
+export const Select = <T extends Value | ListValue>(props: ISelect<T>) => {
   const {
     multiSelect = false,
     value,
@@ -31,33 +32,49 @@ export const Select = <T extends Value | Array<Value>>(props: ISelect<T>) => {
   };
   useEffect(() => {
     if (multiSelect) {
-      const listVal = value as Array<Value>;
+      const listVal =
+        value instanceof Array ? (value as ListValue) : ([value] as ListValue); //? allow toggle `multiSelect` prop
       const _labels = list
-        .filter((_) => listVal.indexOf(_.value) !== -1)
+        .filter((_) => (listVal?.indexOf(_.value) ?? -1) !== -1)
         .map((_) => _.label)
         .join(', ');
       setDisplayValue(_labels);
+      if (!(value instanceof Array)) setValue(listVal as T);
     } else {
-      const _label = list.find((_) => _.value === value)?.label;
+      const val =
+        value instanceof Array ? (value[0] as Value) : (value as Value); //? allow toggle `multiSelect` prop
+      const _label = list.find((_) => _.value === val)?.label;
+      if (value instanceof Array) setValue(val as T);
       setDisplayValue(_label ?? '');
     }
-  }, [list, value]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list, multiSelect, value]);
   const isActive = useCallback(
     (currentValue: Value) => {
       if (multiSelect) {
-        const listVal = value as Array<Value>;
-        return listVal.indexOf(currentValue) !== -1;
+        const val =
+          value instanceof Array
+            ? (value as ListValue)
+            : ([value] as ListValue); //? allow toggle `multiSelect` prop
+        const listVal = val;
+        return (listVal?.indexOf(currentValue) ?? -1) !== -1;
       } else {
-        return value === currentValue;
+        const val =
+          value instanceof Array ? (value[0] as Value) : (value as Value); //? allow toggle `multiSelect` prop
+        return val === currentValue;
       }
     },
-    [value]
+    [multiSelect, value]
   );
 
   const setActive = useCallback(
     (currentValue: Value) => {
       if (multiSelect) {
-        const listVal = value as Array<Value>;
+        const val =
+          value instanceof Array
+            ? (value as ListValue)
+            : ([value] as ListValue); //? allow toggle `multiSelect` prop
+        const listVal = val ?? [];
         const valueIndex = listVal.indexOf(currentValue);
         if (valueIndex === -1) {
           setValue([...listVal, currentValue] as T);
@@ -69,7 +86,8 @@ export const Select = <T extends Value | Array<Value>>(props: ISelect<T>) => {
         onDismiss?.();
       }
     },
-    [value]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [multiSelect, value]
   );
   return (
     <Menu
