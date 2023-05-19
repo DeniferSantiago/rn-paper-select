@@ -72,7 +72,7 @@ export const ItemSelect = ({
               {
                 flex: 1,
                 maxWidth: width,
-              }
+              },
             ]}
           />
         </>
