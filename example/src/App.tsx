@@ -4,28 +4,38 @@ import { StyleSheet, View } from 'react-native';
 import { Provider } from 'react-native-paper';
 import { Select } from 'rn-paper-select';
 const data = [
-  { label: '1', value: 1 },
-  { label: '2', value: 2 },
-  { label: '3', value: 3 },
+  { label: 'Coca Cola', value: 1 },
+  { label: 'Pepsi', value: 2 },
+  { label: 'Fanta', value: 3 },
+  { label: 'Sprite', value: 4 },
+  { label: 'Coca Cola zero', value: 5 },
 ];
 export default function App() {
   const [show, setShow] = React.useState<boolean>(false);
+  const [value, setValue] = React.useState('');
   const [val, setVal] = React.useState<number | null>(null);
   const [show1, setShow1] = React.useState<boolean>(false);
   const [val1, setVal1] = React.useState<number | null>(null);
-
+  const [show2, setShow2] = React.useState<boolean>(false);
+  const [val2, setVal2] = React.useState<number | null>(null);
+  const options = React.useMemo(
+    () =>
+      data.filter((v) => v.label.toLowerCase().startsWith(value.toLowerCase())),
+    [value]
+  );
   return (
     <Provider>
       <View style={styles.container}>
         <Select
           placeholder="Selecciona"
           mode="outlined"
-          inputProps={{ dense: true }}
+          isAutoComplete
           visible={show}
           value={val}
-          setValue={setVal}
+          onChangeText={setValue}
           style={styles.select}
-          list={data}
+          setValue={setVal}
+          list={options}
           showItems={() => setShow(true)}
           onDismiss={() => setShow(false)}
         />
@@ -37,9 +47,21 @@ export default function App() {
           visible={show1}
           value={val1}
           setValue={setVal1}
+          style={styles.select}
           list={data}
           showItems={() => setShow1(true)}
           onDismiss={() => setShow1(false)}
+        />
+        <Select
+          placeholder="Selecciona"
+          mode="outlined"
+          inputProps={{ dense: true }}
+          visible={show2}
+          value={val2}
+          setValue={setVal2}
+          list={data}
+          showItems={() => setShow2(true)}
+          onDismiss={() => setShow2(false)}
         />
       </View>
     </Provider>

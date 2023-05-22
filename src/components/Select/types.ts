@@ -12,11 +12,9 @@ export type Item = {
   label: string;
   custom?: ReactNode;
 };
-export interface ISelect<T> {
-  visible: boolean;
-  multiSelect?: boolean;
-  onDismiss(): void;
-  showItems(): void;
+export interface ISelect<T, K extends boolean> {
+  isAutoComplete?: K;
+  onChangeText?: (value: string) => void;
   disabled?: boolean;
   error?: boolean;
   value: T;
@@ -37,4 +35,8 @@ export interface ISelect<T> {
   itemStyle?: ViewStyle;
   itemTextStyle?: TextStyle;
   accessibilityLabel?: string;
+  onDismiss(): void;
+  showItems(): void;
+  visible: boolean;
+  multiSelect?: K extends true ? undefined : boolean;
 }

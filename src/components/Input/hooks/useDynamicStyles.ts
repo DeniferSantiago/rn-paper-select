@@ -25,10 +25,12 @@ export const useDynamicStyles = ({
   const underlineStyle = {
     borderBottomColor: error ? errorColor : activeUnderlineColor,
     borderBottomWidth: 1,
+    borderRadius: activeTheme.roundness,
   };
   const outlineStyle = {
     borderColor: error ? errorColor : activeOutlineColor,
     borderWidth: 1,
+    borderRadius: activeTheme.roundness,
   };
   const activeStyle = mode === 'outlined' ? outlineStyle : underlineStyle;
   const rippleColor = error
@@ -39,6 +41,7 @@ export const useDynamicStyles = ({
       ? {
           borderColor: error ? errorColor : outlineColor,
           borderWidth: 1,
+          borderRadius: activeTheme.roundness,
         }
       : undefined;
   const defaultBackgroundColor = activeTheme.colors.background;
@@ -49,5 +52,6 @@ export const useDynamicStyles = ({
     disabledColor,
     textColor,
     defaultBackgroundColor,
+    roundness: activeTheme.roundness,
   };
 };

@@ -19,7 +19,7 @@ npm install rn-paper-select
 yarn add rn-paper-select
 ```
 
-## Usage
+## Usage Select
 
 ```jsx
 const data = [
@@ -34,10 +34,48 @@ const [val, setVal] = React.useState(null);
 <Select
   placeholder="Selecciona"
   mode="flat"
+  multiSelect={false}
   visible={show}
   value={val}
   setValue={setVal}
   list={data}
+  showItems={() => setShow(true)}
+  onDismiss={() => setShow(false)}
+/>
+```
+
+## Usage Autocomplete
+```jsx
+const data = [
+  { label: 'Coca Cola', value: 1 },
+  { label: 'Pepsi', value: 2 },
+  { label: 'Fanta', value: 3 },
+  { label: 'Sprite', value: 4 },
+  { label: 'Coca Cola Zero', value: 5 },
+];
+const [show, setShow] = React.useState(false);
+const [value, setValue] = React.useState('');
+const [val, setVal] = React.useState(null);
+const options = React.useMemo(
+  () =>
+    data.filter(
+      (v) => v.label
+        .toLowerCase()
+        .startsWith(value.toLowerCase())
+    ),
+  [value]
+);
+// ...
+
+<Select
+  placeholder="Selecciona"
+  mode="outlined"
+  isAutoComplete
+  visible={show}
+  value={val}
+  onChangeText={setValue}
+  setValue={setVal}
+  list={options}
   showItems={() => setShow(true)}
   onDismiss={() => setShow(false)}
 />

@@ -7,10 +7,10 @@ import {
   TouchableRipple,
   useTheme,
 } from 'react-native-paper';
-import type { Item, Value } from '../Select';
+import type { Item } from '../Select';
 type ItemSelectParams = {
   item: Item;
-  setActive(v: Value): void;
+  setActive(v: Item): void;
   isActive: boolean;
   multiSelect: boolean;
   theme?: ReactNativePaper.Theme;
@@ -48,7 +48,7 @@ export const ItemSelect = ({
           staticStyles.container,
           isActive ? styles.itemSelectedStyle : styles.itemStyle,
         ]}
-        onPress={() => setActive(item.value)}
+        onPress={() => setActive(item)}
       >
         <>
           {multiSelect && (
@@ -57,7 +57,7 @@ export const ItemSelect = ({
                 colors: { accent: color },
               }}
               status={isActive ? 'checked' : 'unchecked'}
-              onPress={() => setActive(item.value)}
+              onPress={() => setActive(item)}
             />
           )}
           <Menu.Item

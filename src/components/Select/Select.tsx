@@ -1,7 +1,7 @@
-import { LayoutChangeEvent, ScrollView } from 'react-native';
+import { LayoutChangeEvent, ScrollView, View } from 'react-native';
 import { Menu } from 'react-native-paper';
 import React, { useEffect, useState, useCallback } from 'react';
-import type { ISelect, Value } from './types';
+import type { ISelect, Item, Value } from './types';
 import { ItemSelect } from '../ItemSelect';
 import { Input } from '../Input';
 const defaultLayout = {
@@ -11,7 +11,9 @@ const defaultLayout = {
   y: 0,
 };
 type ListValue = Array<Value> | undefined | null;
-export const Select = <T extends Value | ListValue>(props: ISelect<T>) => {
+export const Select = <T extends Value | ListValue, K extends boolean>(
+  props: ISelect<T, K>
+) => {
   const {
     multiSelect = false,
     value,
@@ -22,15 +24,28 @@ export const Select = <T extends Value | ListValue>(props: ISelect<T>) => {
     itemsContainerMaxHeight,
     itemsContainerHeight,
     theme,
+    onChangeText,
+    isAutoComplete,
     ...anotherProps
   } = props;
   const [displayValue, setDisplayValue] = useState('');
   const [inputLayout, setInputLayout] = useState(defaultLayout);
 
   const onLayout = (event: LayoutChangeEvent) => {
-    setInputLayout(event.nativeEvent.layout);
+    const l = event.nativeEvent.layout;
+    l.height += isAutoComplete && anotherProps.mode === 'outlined' ? 7 : 1;
+    if (isAutoComplete) {
+      l.width += anotherProps.mode === 'outlined' ? 44 : 36;
+    }
+    setInputLayout(l);
+  };
+  const onChangeTextAutocomplete = (v: string) => {
+    setDisplayValue(v);
+    onChangeText?.(v);
+    if (!visible) anotherProps.showItems();
   };
   useEffect(() => {
+    if (isAutoComplete) return;
     if (multiSelect) {
       const listVal =
         value instanceof Array ? (value as ListValue) : ([value] as ListValue); //? allow toggle `multiSelect` prop
@@ -44,14 +59,15 @@ export const Select = <T extends Value | ListValue>(props: ISelect<T>) => {
       const val =
         value instanceof Array ? (value[0] as Value) : (value as Value); //? allow toggle `multiSelect` prop
       const _label = list.find((_) => _.value === val)?.label;
-      if (value instanceof Array) setValue(val as T);
       setDisplayValue(_label ?? '');
+      if (value instanceof Array) setValue(val as T);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list, multiSelect, value]);
   const isActive = useCallback(
     (currentValue: Value) => {
-      if (multiSelect) {
+      if (isAutoComplete) return false;
+      else if (multiSelect) {
         const val =
           value instanceof Array
             ? (value as ListValue)
@@ -64,12 +80,19 @@ export const Select = <T extends Value | ListValue>(props: ISelect<T>) => {
         return val === currentValue;
       }
     },
-    [multiSelect, value]
+    [multiSelect, value, isAutoComplete]
   );
 
   const setActive = useCallback(
-    (currentValue: Value) => {
-      if (multiSelect) {
+    (currentItem: Item) => {
+      const currentValue = currentItem.value;
+      if (isAutoComplete) {
+        currentItem.label.toLowerCase() === displayValue.toLowerCase();
+        setValue(currentValue as T);
+        setDisplayValue(currentItem.label);
+        onChangeText?.(currentItem.label);
+        onDismiss();
+      } else if (multiSelect) {
         const val =
           value instanceof Array
             ? (value as ListValue)
@@ -87,49 +110,56 @@ export const Select = <T extends Value | ListValue>(props: ISelect<T>) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [multiSelect, value]
+    [multiSelect, value, isAutoComplete]
   );
+  const show = visible && !!list.length;
   return (
-    <Menu
-      visible={visible}
-      onDismiss={onDismiss}
-      theme={theme}
-      anchor={
-        <Input
-          {...anotherProps}
-          onLayout={onLayout}
-          displayValue={displayValue}
-          visible={visible}
-        />
-      }
-      contentStyle={{ paddingVertical: 0, overflow: 'hidden' }}
-      style={{
-        maxWidth: inputLayout?.width,
-        width: inputLayout?.width,
-        marginTop: inputLayout?.height + 1,
-        ...props.style,
-      }}
-    >
-      <ScrollView
-        bounces={false}
+    <View style={props.style}>
+      <Menu
+        visible={show}
+        onDismiss={onDismiss}
+        theme={theme}
+        anchor={
+          <Input
+            {...anotherProps}
+            onChangeText={
+              isAutoComplete ? onChangeTextAutocomplete : onChangeText
+            }
+            isAutoComplete={isAutoComplete}
+            onLayout={onLayout}
+            displayValue={displayValue}
+            visible={show}
+          />
+        }
+        contentStyle={{ paddingVertical: 0, overflow: 'hidden' }}
         style={{
-          height: itemsContainerHeight,
-          maxHeight: itemsContainerMaxHeight || 200,
+          maxWidth: inputLayout?.width,
+          width: inputLayout?.width,
+          marginTop: inputLayout?.height,
         }}
       >
-        {list.map((_item, _index) => (
-          <ItemSelect
-            {...anotherProps}
-            key={_item.value}
-            theme={theme}
-            setActive={setActive}
-            isActive={isActive(_item.value)}
-            item={_item}
-            multiSelect={multiSelect}
-            width={inputLayout.width}
-          />
-        ))}
-      </ScrollView>
-    </Menu>
+        <ScrollView
+          bounces={false}
+          keyboardShouldPersistTaps="handled"
+          style={{
+            height: itemsContainerHeight,
+            maxHeight: itemsContainerMaxHeight || 200,
+          }}
+        >
+          {list.map((_item, _index) => (
+            <ItemSelect
+              {...anotherProps}
+              key={_item.value}
+              theme={theme}
+              setActive={setActive}
+              isActive={isActive(_item.value)}
+              item={_item}
+              multiSelect={multiSelect}
+              width={inputLayout.width}
+            />
+          ))}
+        </ScrollView>
+      </Menu>
+    </View>
   );
 };
