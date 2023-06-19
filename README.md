@@ -80,6 +80,43 @@ const options = React.useMemo(
   onDismiss={() => setShow(false)}
 />
 ```
+## Usage with custom item
+```jsx
+const data = [
+  { label: 'Coca Cola', value: 1 },
+  { label: 'Pepsi', value: 2 },
+  { label: 'Fanta', value: 3 },
+  { label: 'Sprite', value: 4 },
+  { label: 'Coca Cola Zero', value: 5 },
+];
+const [show, setShow] = React.useState(false);
+const [val, setVal] = React.useState(null);
+const options = React.useMemo(
+  () =>
+    data.map((v) => ({
+      ...v,
+      custom: (
+        <View style={styles.itemStyle}>
+          <Text>{v.label}</Text>
+          <Text>{v.value}</Text>
+        </View>
+      ),
+    })),
+  [value]
+);
+// ...
+
+<Select
+  placeholder="Selecciona"
+  mode="outlined"
+  visible={show}
+  value={val}
+  setValue={setVal}
+  list={options}
+  showItems={() => setShow(true)}
+  onDismiss={() => setShow(false)}
+/>
+```
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
