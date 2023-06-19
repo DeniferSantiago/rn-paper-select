@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import {
   Checkbox,
   Divider,
@@ -25,6 +25,10 @@ const staticStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  title: { flexShrink: 1 },
+  menuItem: {
+    flex: 1,
   },
 });
 export const ItemSelect = ({
@@ -60,21 +64,28 @@ export const ItemSelect = ({
               onPress={() => setActive(item)}
             />
           )}
-          <Menu.Item
-            titleStyle={[
-              {
-                color: isActive ? color : textColor,
-              },
-              isActive ? styles.itemSelectedTextStyle : styles.itemTextStyle,
-            ]}
-            title={item.custom || item.label}
-            style={[
-              {
-                flex: 1,
-                maxWidth: width,
-              },
-            ]}
-          />
+          {item.custom && (
+            <View
+              style={[
+                staticStyles.menuItem,
+                isActive ? styles.itemSelectedTextStyle : styles.itemTextStyle,
+              ]}
+            >
+              {item.custom}
+            </View>
+          )}
+          {!item.custom && (
+            <Menu.Item
+              titleStyle={[
+                {
+                  color: isActive ? color : textColor,
+                },
+                isActive ? styles.itemSelectedTextStyle : styles.itemTextStyle,
+              ]}
+              title={item.label}
+              style={[staticStyles.menuItem, { width }]}
+            />
+          )}
         </>
       </TouchableRipple>
       <Divider />

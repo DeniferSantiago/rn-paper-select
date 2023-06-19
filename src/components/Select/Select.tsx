@@ -1,4 +1,9 @@
-import { LayoutChangeEvent, ScrollView, View } from 'react-native';
+import {
+  FlatList,
+  LayoutChangeEvent,
+  ListRenderItemInfo,
+  View,
+} from 'react-native';
 import { Menu } from 'react-native-paper';
 import React, { useEffect, useState, useCallback } from 'react';
 import type { ISelect, Item, Value } from './types';
@@ -113,6 +118,21 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
     [multiSelect, value, isAutoComplete]
   );
   const show = visible && !!list.length;
+  const renderItem = useCallback(
+    ({ item: _item }: ListRenderItemInfo<Item>) => (
+      <ItemSelect
+        {...anotherProps}
+        key={_item.value}
+        theme={theme}
+        setActive={setActive}
+        isActive={isActive(_item.value)}
+        item={_item}
+        multiSelect={multiSelect}
+        width={inputLayout.width}
+      />
+    ),
+    [anotherProps, inputLayout.width, isActive, multiSelect, setActive, theme]
+  );
   return (
     <View style={props.style}>
       <Menu
@@ -138,27 +158,17 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
           marginTop: inputLayout?.height,
         }}
       >
-        <ScrollView
+        <FlatList
           bounces={false}
           keyboardShouldPersistTaps="handled"
           style={{
             height: itemsContainerHeight,
             maxHeight: itemsContainerMaxHeight || 200,
           }}
-        >
-          {list.map((_item, _index) => (
-            <ItemSelect
-              {...anotherProps}
-              key={_item.value}
-              theme={theme}
-              setActive={setActive}
-              isActive={isActive(_item.value)}
-              item={_item}
-              multiSelect={multiSelect}
-              width={inputLayout.width}
-            />
-          ))}
-        </ScrollView>
+          data={list}
+          keyExtractor={(v, i) => v.value?.toString() || i.toString()}
+          renderItem={renderItem}
+        />
       </Menu>
     </View>
   );
