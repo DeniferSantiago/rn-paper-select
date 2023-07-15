@@ -60,7 +60,6 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
     isSubmit?: boolean,
     isPress?: boolean
   ) => {
-    console.log(v, lastIsSubmit.current, isSubmit, isPress);
     if (lastIsSubmit.current && isSubmit && !isPress) {
       onDismiss();
       return;
@@ -91,7 +90,6 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
       setDisplayValue(text);
       onChangeText?.(text);
     } else {
-      console.log('Set directly');
       setDisplayValue(v);
       onChangeText?.(v);
     }
