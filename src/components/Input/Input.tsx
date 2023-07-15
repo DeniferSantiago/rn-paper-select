@@ -9,7 +9,7 @@ type InputParams = {
   error?: boolean;
   visible: boolean;
   isAutoComplete?: boolean;
-  onChangeText?: (value: string) => void;
+  onChangeText?: (value: string, isSubmit?: boolean) => void;
   showItems(): void;
   onLayout(event: LayoutChangeEvent): void;
   theme?: ReactNativePaper.Theme;
@@ -64,8 +64,10 @@ export const Input = ({
       label={label}
       onLayout={isAutoComplete ? touchableProps.onLayout : undefined}
       onChangeText={onChangeText}
-      onSubmitEditing={({ nativeEvent }) => onChangeText?.(nativeEvent.text)}
-      onEndEditing={({ nativeEvent }) => onChangeText?.(nativeEvent.text)}
+      onSubmitEditing={({ nativeEvent }) =>
+        onChangeText?.(nativeEvent.text, true)
+      }
+      onEndEditing={({ nativeEvent }) => onChangeText?.(nativeEvent.text, true)}
       placeholder={placeholder}
       pointerEvents="none"
       onFocus={showItems}
@@ -102,7 +104,7 @@ export const Input = ({
         {
           backgroundColor: defaultBackgroundColor,
           borderRadius: roundness,
-          overflow: 'hidden',
+          overflow: 'hidden' as const,
         },
         containerInputStyle,
       ]}

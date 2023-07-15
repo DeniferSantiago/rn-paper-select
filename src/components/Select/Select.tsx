@@ -1,14 +1,16 @@
 import {
   FlatList,
+  Keyboard,
   LayoutChangeEvent,
   ListRenderItemInfo,
   View,
 } from 'react-native';
 import { Menu } from 'react-native-paper';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import type { ISelect, Item, Value } from './types';
 import { ItemSelect } from '../ItemSelect';
 import { Input } from '../Input';
+const menuContentStyle = { paddingVertical: 0, overflow: 'hidden' as const };
 const defaultLayout = {
   height: 0,
   width: 0,
@@ -44,10 +46,56 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
     }
     setInputLayout(l);
   };
-  const onChangeTextAutocomplete = (v: string) => {
-    setDisplayValue(v);
-    onChangeText?.(v);
-    if (!visible) anotherProps.showItems();
+  const lastIsSubmit = useRef(false);
+  const clean = (cleanText?: boolean) => {
+    if (cleanText) {
+      setDisplayValue('');
+      onChangeText?.('');
+    }
+    setValue(null as T);
+    onDismiss();
+  };
+  const onChangeTextAutocomplete = (
+    v: string,
+    isSubmit?: boolean,
+    isPress?: boolean
+  ) => {
+    console.log(v, lastIsSubmit.current, isSubmit, isPress);
+    if (lastIsSubmit.current && isSubmit && !isPress) {
+      onDismiss();
+      return;
+    }
+    lastIsSubmit.current = !!isSubmit;
+    if (isSubmit && !isPress) {
+      const equalItem = list.find(
+        (a) => a.label.toLowerCase() === v.trim().toLowerCase()
+      );
+      const lastItem = list.find((a) => a.value === value);
+      const item = equalItem ?? lastItem;
+      let text = item?.label ?? '';
+      if (v && text) setValue(item?.value as T); //? Si al hacer submit el texto en el input es el mismo que un item o el anterior item está dentro de la lista
+      if (v && !text) {
+        const nearestItem = list[0];
+        if (nearestItem) {
+          setValue(nearestItem.value as T); //? Si el ultimo item no es valido y el texto del usuario no coincide con ninguno tomamos el que mas coincida de la lista
+          text = nearestItem.label;
+        } else {
+          clean(true); //? Si no hay ningun item que coincida en lo minimo
+          return;
+        } //? Si no hay ningun item que coincida en lo minimo
+      } else if (!v) {
+        clean(); //? si no hay valor cuando se hace submit asumimos que el usuario quiere borrar el valor seleccionado
+        return;
+      }
+      onDismiss();
+      setDisplayValue(text);
+      onChangeText?.(text);
+    } else {
+      console.log('Set directly');
+      setDisplayValue(v);
+      onChangeText?.(v);
+    }
+    if (!visible && !isSubmit) anotherProps.showItems();
   };
   useEffect(() => {
     if (isAutoComplete) return;
@@ -71,7 +119,7 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
   }, [list, multiSelect, value]);
   const isActive = useCallback(
     (currentValue: Value) => {
-      if (isAutoComplete) return false;
+      if (isAutoComplete) return currentValue === value;
       else if (multiSelect) {
         const val =
           value instanceof Array
@@ -92,11 +140,12 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
     (currentItem: Item) => {
       const currentValue = currentItem.value;
       if (isAutoComplete) {
-        currentItem.label.toLowerCase() === displayValue.toLowerCase();
-        setValue(currentValue as T);
-        setDisplayValue(currentItem.label);
-        onChangeText?.(currentItem.label);
+        if (currentItem.label.toLowerCase() !== displayValue.toLowerCase()) {
+          setValue(currentValue as T);
+          onChangeTextAutocomplete(currentItem.label, true, true);
+        }
         onDismiss();
+        Keyboard.dismiss();
       } else if (multiSelect) {
         const val =
           value instanceof Array
@@ -151,7 +200,7 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
             visible={show}
           />
         }
-        contentStyle={{ paddingVertical: 0, overflow: 'hidden' }}
+        contentStyle={menuContentStyle}
         style={{
           maxWidth: inputLayout?.width,
           width: inputLayout?.width,
