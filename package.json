@@ -1,6 +1,6 @@
 {
   "name": "rn-paper-select",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Material Design Select Component using React Native Paper, now also with multiSelect support.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
