@@ -101,7 +101,12 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
         value instanceof Array ? (value[0] as Value) : (value as Value);
       const currentItem = list.find((_) => _.value === val);
       if (currentItem) onChangeTextAutocomplete(currentItem.label, true, true);
-    } else if (multiSelect) {
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (isAutoComplete) return;
+    else if (multiSelect) {
       const listVal =
         value instanceof Array ? (value as ListValue) : ([value] as ListValue); //? allow toggle `multiSelect` prop
       const _labels = list
