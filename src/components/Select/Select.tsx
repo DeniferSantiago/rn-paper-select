@@ -33,6 +33,7 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
     theme,
     onChangeText,
     isAutoComplete,
+    isFreeInput,
     ...anotherProps
   } = props;
   const [displayValue, setDisplayValue] = useState('');
@@ -69,11 +70,13 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
       const equalItem = list.find(
         (a) => a.label.toLowerCase() === v.trim().toLowerCase()
       );
-      const lastItem = list.find((a) => a.value === value);
+      const lastItem = !isFreeInput
+        ? list.find((a) => a.value === value)
+        : undefined;
       const item = equalItem ?? lastItem;
       let text = item?.label ?? '';
       if (v && text) setValue(item?.value as T); //? Si al hacer submit el texto en el input es el mismo que un item o el anterior item está dentro de la lista
-      if (v && !text) {
+      if (v && !text && !isFreeInput) {
         const nearestItem = list[0];
         if (nearestItem) {
           setValue(nearestItem.value as T); //? Si el ultimo item no es valido y el texto del usuario no coincide con ninguno tomamos el que mas coincida de la lista
@@ -82,13 +85,16 @@ export const Select = <T extends Value | ListValue, K extends boolean>(
           clean(true); //? Si no hay ningun item que coincida en lo minimo
           return;
         } //? Si no hay ningun item que coincida en lo minimo
-      } else if (!v) {
+      } else if (!v && !isFreeInput) {
         clean(); //? si no hay valor cuando se hace submit asumimos que el usuario quiere borrar el valor seleccionado
         return;
+      } else if (isFreeInput && !item) {
+        setValue(null as T);
       }
       onDismiss();
-      setDisplayValue(text);
-      onChangeText?.(text);
+      const newText = isFreeInput ? v : text;
+      setDisplayValue(newText);
+      onChangeText?.(newText);
     } else {
       setDisplayValue(v);
       onChangeText?.(v);

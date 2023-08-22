@@ -8,6 +8,8 @@ Material Design Select Dropdown Component using React Native Paper
 
 Check out the [Example](./example) code or you can check the example source code in [example module](https://github.com/DeniferSantiago/rn-paper-select/tree/master/example).
 
+**Only compatible with react-native-paper version 4**
+
 Inspired by [react-native-paper-select](https://github.com/srivastavaanurag79/react-native-paper-select)
 
 ## Installation
@@ -71,6 +73,22 @@ const options = React.useMemo(
   placeholder="Selecciona"
   mode="outlined"
   isAutoComplete
+  visible={show}
+  value={val}
+  onChangeText={setValue}
+  setValue={setVal}
+  list={options}
+  showItems={() => setShow(true)}
+  onDismiss={() => setShow(false)}
+/>
+```
+##### Autocomplete allowing values outside of options:
+```jsx
+<Select
+  placeholder="Selecciona"
+  mode="outlined"
+  isAutoComplete
+  isFreeInput // adding this property prop the user from being forced to select a predefined option
   visible={show}
   value={val}
   onChangeText={setValue}

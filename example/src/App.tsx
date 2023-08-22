@@ -47,6 +47,7 @@ export default function App() {
           isAutoComplete
           visible={show}
           value={val}
+          isFreeInput
           onChangeText={setValue}
           style={styles.select}
           setValue={setVal}

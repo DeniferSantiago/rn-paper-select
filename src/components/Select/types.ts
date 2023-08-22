@@ -14,6 +14,7 @@ export type Item = {
 };
 export interface ISelect<T, K extends boolean> {
   isAutoComplete?: K;
+  isFreeInput?: K extends true ? boolean : undefined;
   onChangeText?: (value: string) => void;
   disabled?: boolean;
   error?: boolean;
